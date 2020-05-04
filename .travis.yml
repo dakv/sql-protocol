@@ -64,6 +64,7 @@ script:
 after_success:
   - rm Cargo.lock
   - cargo coveralls --verbose
+  - bash <(curl -s https://codecov.io/bash) && echo "Uploaded code coverage"
 
 env:
   global:
