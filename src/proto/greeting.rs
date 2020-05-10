@@ -33,14 +33,14 @@ impl Greeting {
         for item in &mut salt {
             *item = byte_rand(1, 123);
         }
-        box Greeting {
+        Box::new(Greeting {
             status_flag: SERVER_STATUS_AUTOCOMMIT,
             capability: DEFAULT_SERVER_CAPABILITY,
             connection_id,
             server_version,
             auth_plugin_name: "".to_string(),
             salt,
-        }
+        })
     }
 
     pub fn status_flag(&self) -> u16 {
@@ -196,7 +196,7 @@ mod tests {
     #[test]
     fn test_greeting1() {
         let mut expected = Greeting::new(4, "".to_string());
-        let mut actual = box Greeting::default();
+        let mut actual = Box::new(Greeting::default());
         let data = expected.write_handshake_v10(false).unwrap();
         let result = actual.parse_client_handshake_packet(data.as_slice());
         assert!(result.is_ok());
@@ -205,11 +205,11 @@ mod tests {
 
     #[test]
     fn test_greeting2() {
-        let mut expected = box Greeting::default();
+        let mut expected = Box::new(Greeting::default());
         expected.salt = vec![0; 20];
         expected.capability = DEFAULT_SERVER_CAPABILITY & !(CapabilityClientPluginAuth as u32);
-        assert_eq!(expected.capability, 20161037);
-        let mut actual = box Greeting::default();
+        assert_eq!(expected.capability, 20_161_037);
+        let mut actual = Box::new(Greeting::default());
         let data = expected.write_handshake_v10(false).unwrap();
         let result = actual.parse_client_handshake_packet(data.as_slice());
         assert!(result.is_ok());

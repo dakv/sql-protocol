@@ -15,11 +15,11 @@ addons:
     - kalakris-cmake
     - sourceline: ppa:sivakov512/kcov
 rust:
-- nightly
+- stable
 before_script:
 - rustup component add clippy
 - rustup component add rustfmt
-- rustup toolchain install nightly --profile default
+- rustup toolchain install stable --profile default
 - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
 - export PATH=$HOME/.cargo/bin:$PATH
 - cargo install cargo-update || echo "cargo-update already installed"
@@ -30,7 +30,7 @@ script:
 - travis-cargo build
 - travis-cargo test
 - travis-cargo test -- all-features
-- cargo +nightly fmt -- --check --config-path rustfmt.toml
+- cargo fmt -- --check --config-path rustfmt.toml
 after_success:
 - rm Cargo.lock
 - cargo coveralls --verbose

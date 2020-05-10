@@ -314,15 +314,18 @@ mod tests {
         let mut auth = Auth::new();
         auth.parse_client_handshake_packet(data, false).unwrap();
         assert_eq!(auth.character_set, 33);
-        assert_eq!(auth.max_packet_size, 16777216);
+        assert_eq!(auth.max_packet_size, 16_777_216);
         //        assert_eq!(auth.capability_flags, 33531533);
         assert_eq!(auth.auth_method, String::from(MYSQL_NATIVE_PASSWORD));
         assert_eq!(auth.database, "abc".to_string());
         assert_eq!(auth.user, "root".to_string());
-        assert_eq!(auth.auth_response, vec![
-            0x0e, 0xb4, 0xdd, 0xb5, 0x5b, 0x64, 0xf8, 0x54, 0x40, 0xfd, 0xf3, 0x45, 0xfa, 0x37,
-            0x12, 0x20, 0x20, 0xda, 0x38, 0xaa
-        ]);
+        assert_eq!(
+            auth.auth_response,
+            vec![
+                0x0e, 0xb4, 0xdd, 0xb5, 0x5b, 0x64, 0xf8, 0x54, 0x40, 0xfd, 0xf3, 0x45, 0xfa,
+                0x37, 0x12, 0x20, 0x20, 0xda, 0x38, 0xaa
+            ]
+        );
     }
 
     #[test]
