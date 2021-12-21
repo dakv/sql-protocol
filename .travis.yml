@@ -1,0 +1,43 @@
+dist: xenial
+sudo: required
+cache: cargo
+language: rust
+addons:
+  apt:
+    packages:
+    - kcov
+    - libcurl4-openssl-dev
+    - libelf-dev
+    - libdw-dev
+    - binutils-dev
+    - cmake
+    sources:
+    - kalakris-cmake
+    - sourceline: ppa:sivakov512/kcov
+rust:
+- stable
+before_script:
+- rustup component add clippy
+- rustup component add rustfmt
+- rustup toolchain install stable --profile default
+- pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
+- export PATH=$HOME/.cargo/bin:$PATH
+- cargo install cargo-update || echo "cargo-update already installed"
+- cargo install cargo-travis || echo "cargo-travis already installed"
+- cargo install-update -a
+script:
+- travis-cargo clippy -- --all-targets --all-features -- -D warnings
+- travis-cargo build
+- travis-cargo test
+- travis-cargo test -- all-features
+- cargo fmt -- --check --config-path rustfmt.toml
+after_success:
+- rm Cargo.lock
+- cargo coveralls --verbose
+- bash <(curl -s https://codecov.io/bash) && echo "Uploaded code coverage"
+env:
+  global:
+  - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+notifications:
+  slack:
+    secure: t4uGOIlmTu+5esKJgoM1Muks1MTr7dEJhKoPcZBmWT4a+oqqK38ftjSovoabxwHdfCLncKzws861EXOpzjYxj5+y7GOmfNM4yCnqGEiLWCGlAnhqWUaA2KZOjTNvjVx2J0X9UpQeBpPg+R+statQsasoJJc+0RYBy7UGXurO2yHzKYLdAF+KKtexlSl5yAQQ2A/qNQ3fNCQHOXOgFE5kONvVqjUMBA5KmcaVr72xT0keRj1qC8HqOXz3LnvX2iFWQpT/Cc6r6eZjDKdajHc0/Wgz9wyfxR8HRNbgCjwYcf76g8D7coqq5KVXYdRadtuMo7uWgO1efU8HNzWvsCU0vSSdDSx9adUppntrSfaPwudUpdoQPpjXSdBmuWJMxI2gusmat6PxODxiV7S/e/NGztOlpMDJ0oro/db6dn+D8K4Dch6zHyoJoU+eUe7dgiCjNR/q608MWUNG2GAbGB2+bz8TQtb/YyHcmxr0LKB8Mh4ECW168xpwtQjR/cMXskzZgNxsw4W6NPigwiEsy6hxSDDz8jzi0fckPpRE+WY0ctbOLreTlVFe6POSMPY0mKf4vViHxXIcuJW6a2rRPlNJqaEZJLRqlDcxjRcBJhxXiy+kOOiNrM29tVd/rQ0f+U3t53cVZ+HtaDGPidrDHyYJpS87oORLwjYFb4QCUo6b+jQ=
